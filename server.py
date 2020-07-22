@@ -1,12 +1,12 @@
 import socket
 
-socket = socket.socket()
+server_socket = socket.socket()
 
-socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-socket.bind(('localhost', 9090))
-socket.listen(1)
-conn, addr = socket.accept()
+server_socket.bind(('localhost', 9090))
+server_socket.listen(1)
+conn, addr = server_socket.accept()
 
 pp = open('data/proba.blend', 'wb')
 
