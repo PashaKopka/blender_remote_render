@@ -9,25 +9,36 @@ class Client(QWidget):
         super().__init__()
         self.resize(200, 200)
 
-    def send_file_server(self):
-        self.connect_server()
-        self.sf = self.socket.fileno()
-        self.lf = open('proba.blend', 'rb')
-
-        self.socket.sendfile(self.lf)
+        self.choose_button = QPushButton('Choose file', self)
+        self.send_button = QPushButton('Send', self)
+        self.send_button.move(100, 0)
 
     def connect_server(self):
-        self.socket = socket.socket()
-        self.socket.connect(('localhost', 9090))
+        self.client_socket = socket.socket()
+        self.client_socket.connect(('localhost', 9090))
+
+    def send_file_server(self):
+        self.connect_server()
+        self.sf = self.client_socket.fileno()
+        self.lf = open(self.infile_name, 'rb')
+
+        self.client_socket.sendfile(self.lf)
+
+        self.close_connection()
 
     def close_connection(self):
-        self.socket.close()
+        self.client_socket.close()
+
+    def choose_file(self):
+        self.infile_name = QFileDialog.getOpenFileName(self, 'Open file', '')[0]
 
 
 app = QApplication(sys.argv)
 demo = Client()
-demo.send_file_server()
-demo.close_connection()
+
+demo.choose_button.clicked.connect(demo.choose_file)
+demo.send_button.clicked.connect(demo.send_file_server)
+
 demo.show()
 
 sys.exit(app.exec_())

@@ -1,5 +1,5 @@
 import socket
-from blender_remoote_render import renderer
+import renderer
 
 
 class Server:
@@ -39,4 +39,3 @@ class Server:
 
 
 server = Server()
-
