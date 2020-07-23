@@ -1,4 +1,5 @@
 import socket
+from blender_remoote_render import renderer
 
 
 class Server:
@@ -9,6 +10,7 @@ class Server:
         self.buffer = memoryview(bytearray(1024 * 1024 * 10))
         self.num_bytes = 1
         self.receive_file()
+        self.render()
 
     def receive_file(self):
         while self.num_bytes:
@@ -30,6 +32,10 @@ class Server:
         self.socket.bind(('localhost', 9090))
         self.socket.listen(1)
         self.conn, self.addr = self.socket.accept()
+
+    def render(self):
+        self.renderer = renderer.Renderer(input_file='data/proba.blend')
+        self.renderer.render()
 
 
 server = Server()

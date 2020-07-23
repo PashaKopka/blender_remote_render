@@ -1,7 +1,5 @@
-import socket
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFileDialog
-import os
 import socket
 
 
