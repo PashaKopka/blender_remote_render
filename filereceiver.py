@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFileDialog
 import socket
 
 
-class Client(QWidget):
+class FileReceiver(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -68,12 +68,13 @@ class Client(QWidget):
                     break
 
             self.pp.write(self.buffer)
+        self.pp.close()
 
         self.close_connection(self.back_socket)
 
 
 app = QApplication(sys.argv)
-demo = Client()
+demo = FileReceiver()
 
 demo.choose_button.clicked.connect(demo.choose_file)
 demo.send_button.clicked.connect(demo.send_file_server)
