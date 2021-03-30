@@ -2,6 +2,7 @@ import os
 import socket
 import renderer
 import constants
+import win32com.shell.shell as shell
 
 
 class Server:
@@ -16,6 +17,7 @@ class Server:
         self.back_socket = None
         self.sf = None
         self.lf = None
+        self.data = None
 
         self.connect_client()
         self.input_blend_file = open('data/proba.blend', 'wb')
@@ -27,26 +29,16 @@ class Server:
         self.send_rendered_file_back()
 
     def receive_file(self):
-        while self.num_bytes:
-            self.toread = 1024 * 1024 * 10
-            self.view = self.buffer[:]
-            while self.toread:
-                self.num_bytes = self.conn.recv_into(self.view, self.toread)
-                self.view = self.view[self.num_bytes:]
-                self.toread -= self.num_bytes
-                if self.num_bytes == 0:
-                    self.buffer = self.buffer[:-self.toread]
-                    break
-
-            self.input_blend_file.write(self.buffer)
-        self.input_blend_file.close()
+        while True:
+            self.data = self.client_socket.recv(1024)
+            if not self.data:
+                break
+            self.input_blend_file.write(self.data)
 
     def connect_client(self):
-        self.server_socket = socket.socket()
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.bind(('localhost', 9090))
-        self.server_socket.listen(1)
-        self.conn, self.address = self.server_socket.accept()
+        self.client_socket = socket.socket()
+        self.client_socket.connect(('35.173.69.207', 8080))
+        self.sf = self.client_socket.fileno()
 
     def render(self):
         self.renderer = renderer.Renderer(input_file='data/proba.blend')
@@ -54,7 +46,7 @@ class Server:
 
     def send_rendered_file_back(self):
         self.back_socket = socket.socket()
-        self.back_socket.connect(('localhost', 9090))
+        self.back_socket.connect(('35.173.69.207', 8080))
         self.sf = self.back_socket.fileno()
         self.lf = open('data/image.png', 'rb')
         self.back_socket.sendfile(self.lf)
@@ -72,4 +64,5 @@ class Server:
         os.remove('data/image.png')
 
 
-server = Server()
+while True:
+    server = Server()
